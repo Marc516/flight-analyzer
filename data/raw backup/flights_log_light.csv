@@ -1,0 +1,16 @@
+date,flight_id,fuel_liters,engine_time_h,departure,arrival,is_mine,notes
+
+
+2026-02-07,2026-02-07_1118_FGTPK,,1.3,LFCL,LFCL,1,Entrainement Nav de pré-selection TAJP 1
+2026-02-21,2026-02-21_0904_FGTPK,,1.3,LFCL,LFCL,1,Entrainement Nav de pré-selection TAJP 2
+2026-03-10,2026-03-10_1455_FGSBJ,54.0,1.9,LFCL,LFCL,1,Nav de pré-selection TAJP
+2026-03-21,2026-03-21_1514_FGSBJ,39.6,1.6,LFCL,LFCL,1,Entrainement au trajet Nav avec Flo
+2026-04-03,2026-04-03_1616_FGSBJ,19.1,1.0,LFCL,LFCL,1,Tour de Piste par vent de travers
+2026-04-05,2026-04-05_0834_FGTPK,41.9,1.5,LFCL,LFCL,1,Vol avec Flo
+2026-04-10,2026-04-10_1602_FGSBJ,21.0,1.1,LFCL,LFCL,1,"Tour de Piste, conditions parfaites"
+2026-04-26,2026-04-26_1224_FGSBJ,53.9,1.8,LFCL,LFCL,1,Vol Viaduc de Millau
+2026-05-07,2026-05-07_1231_FGSRR,46.9,1.7,LFCL,LFCL,1,Nav Pamier
+2026-06-03,2026-06-03_1532_FGSBJ,34.6,1.1,LFCL,LFCL,1,Entrainement 45°
+2026-06-26,2026-06-26_0659_FGTPK,28.9,1.1,LFCL,LFMU,1,Vol Lasbordes --Béziers
+2026-06-26,2026-06-26_0828_FGTPK,47.43,1.9,LFMU,LFBU,1,Vol Béziers -- Angoulême 
+2026-06-26,2026-06-26_1040_FGTPK,44.0,1.9,LFBU,LFCL,1,Vol Angoulême -- Lasbordes
