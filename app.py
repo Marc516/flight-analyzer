@@ -424,14 +424,21 @@ else:
         with col_opt1:
             color_opt = st.radio("Coloration :", ["phase", "altitude", "speed"], horizontal=True, key=f"radio_{vol_choisi}")
         with col_opt2:
+            import os
+            est_en_local = not os.getcwd().startswith("/mount")
+            
+            options_cartes = [
+                "Carte Relief VFR (Stamen Terrain)", 
+                "Esri Satellite (Vue Réelle)", 
+                "OpenTopoMap (Topographique)", 
+                "OpenStreetMap (Standard)"
+            ]
+            
             map_style = st.selectbox(
                 "Fond de carte :", 
-                [
-                    "Carte Relief VFR (Stamen Terrain)", 
-                    "Esri Satellite (Vue Réelle)", 
-                    "OpenTopoMap (Topographique)", 
-                    "OpenStreetMap (Standard)"
-                ],
+                options_cartes,
+                # Index 0 (Stamen) chez toi, Index 1 (Satellite) sur le cloud
+                index=0 if est_en_local else 1,
                 key=f"map_{vol_choisi}"
             )
         

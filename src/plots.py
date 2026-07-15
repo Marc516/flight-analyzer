@@ -25,6 +25,8 @@ import matplotlib.cm as cm
 import pydeck as pdk
 from pathlib import Path
 
+EST_EN_LOCAL = not os.getcwd().startswith("/mount")
+
 
 # ─────────────────────────────────────────────
 # CONSTANTES VISUELLES & FONDS DE CARTE
@@ -110,7 +112,7 @@ def plot_trajectory(
     df: pd.DataFrame,
     flight_id: str = None,
     color_by: str = "phase",
-    map_style: str = "Carte Relief VFR (Stamen Terrain)",
+    map_style: str = "Carte Relief VFR (Stamen Terrain)" if EST_EN_LOCAL else "Esri Satellite (Vue Réelle)",
     openaip_key: str = None, 
     save: bool = True,
 ) -> folium.Map:
