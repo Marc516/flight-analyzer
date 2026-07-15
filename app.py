@@ -6,6 +6,8 @@ import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
 from pathlib import Path
+from github import Github
+import base64
 
 # --- Configuration de la page Streamlit ---
 st.set_page_config(
@@ -169,39 +171,73 @@ with st.sidebar:
                 submit = st.form_submit_button("Enregistrer le vol")
                 
                 if submit:
-                    # ─── 1. SAUVEGARDE PHYSIQUE DES FICHIERS (CSV & KML) ───
-                    raw_dir = Path("data/raw")
-                    raw_dir.mkdir(parents=True, exist_ok=True)
-                    
-                    for file_to_save in uploaded_files:
-                        extension = Path(file_to_save.name).suffix
-                        file_path = raw_dir / f"{generated_id}{extension}"
-                        with open(file_path, "wb") as f:
-                            f.write(file_to_save.getbuffer())
-                    
-                    # ─── 2. MISE À JOUR DU CARNET DE VOL ───
-                    fuel_to_save = fuel if fuel > 0.0 else ""
-                    engine_to_save = engine_time if engine_time > 0.0 else ""
-                    
-                    log_path = Path("data/flights_log.csv")
-                    new_line = pd.DataFrame([{
-                        "date": dt_start.strftime('%Y-%m-%d'),
-                        "flight_id": generated_id,
-                        "fuel_liters": fuel_to_save,
-                        "engine_time_h": engine_to_save,
-                        "departure": dep.upper(),
-                        "arrival": arr.upper(),
-                        "is_mine": 1 if is_mine else 0,
-                        "TDP": 1 if is_tdp else 0,  # <-- NOUVELLE COLONNE
-                        "notes": notes
-                    }])
-                    
-                    # Ajout au fichier CSV
-                    new_line.to_csv(log_path, mode='a', header=not log_path.exists(), index=False)
-                    
-                    st.success("✅ Vol enregistré et fichiers sauvegardés !")
-                    st.cache_data.clear()
-                    st.rerun()
+                    with st.spinner("☁️ Envoi vers GitHub en cours... ne quittez pas la page."):
+                        try:
+                            # 1. Connexion au Coffre-fort GitHub
+                            g = Github(st.secrets["GITHUB_TOKEN"])
+                            repo = g.get_repo(st.secrets["GITHUB_REPO"])
+                            
+                            # 2. Envoi des fichiers bruts (CSV et KML)
+                            for file_to_save in uploaded_files:
+                                extension = Path(file_to_save.name).suffix
+                                file_path = f"data/raw/{generated_id}{extension}"
+                                
+                                # Création physique du fichier sur GitHub
+                                repo.create_file(
+                                    path=file_path, 
+                                    message=f"Ajout trace {generated_id}", 
+                                    content=file_to_save.getvalue(), 
+                                    branch="main"
+                                )
+                            
+                            # 3. Préparation de la nouvelle ligne du carnet
+                            fuel_to_save = fuel if fuel > 0.0 else ""
+                            engine_to_save = engine_time if engine_time > 0.0 else ""
+                            
+                            new_line = pd.DataFrame([{
+                                "date": dt_start.strftime('%Y-%m-%d'),
+                                "flight_id": generated_id,
+                                "fuel_liters": fuel_to_save,
+                                "engine_time_h": engine_to_save,
+                                "departure": dep.upper(),
+                                "arrival": arr.upper(),
+                                "is_mine": 1 if is_mine else 0,
+                                "TDP": 1 if is_tdp else 0,
+                                "notes": notes
+                            }])
+                            
+                            # Convertir en texte CSV
+                            new_csv_string = new_line.to_csv(header=False, index=False)
+                            
+                            # 4. Téléchargement, modification et écrasement du flights_log.csv
+                            log_path = "data/flights_log.csv"
+                            file_contents = repo.get_contents(log_path, ref="main")
+                            
+                            # Décoder le texte existant
+                            existing_content = base64.b64decode(file_contents.content).decode("utf-8")
+                            
+                            # Sécurité : ajouter un saut de ligne si le fichier n'en a pas à la fin
+                            if not existing_content.endswith('\n'):
+                                existing_content += '\n'
+                                
+                            updated_content = existing_content + new_csv_string
+                            
+                            # Envoyer la version mise à jour
+                            repo.update_file(
+                                path=file_contents.path, 
+                                message=f"Mise à jour log {generated_id}", 
+                                content=updated_content, 
+                                sha=file_contents.sha, 
+                                branch="main"
+                            )
+                            
+                            st.success("✅ Vol enregistré sur le Cloud et synchronisé avec succès !")
+                            st.cache_data.clear()
+                            st.rerun()
+                            
+                        except Exception as e:
+                            st.error(f"❌ Erreur lors de la synchronisation : {e}")
+                            st.info("Vérifiez que vos 'Secrets' Streamlit sont bien configurés et corrects.")
         else:
             st.warning("⚠️ Glissez au moins le fichier .csv pour extraire les infos de base.")
                 
