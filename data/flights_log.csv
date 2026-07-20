@@ -40,3 +40,4 @@ date,flight_id,fuel_liters,engine_time_h,departure,arrival,is_mine,TDP,notes
 2026-06-28,2026-06-28_0856_FGSRR,22.0,0.9,LFCL,LFCL,0,1,model
 2026-06-28,2026-06-28_0656_FGSRR,29.4,1.3,LFCL,LFCL,0,0,model
 2026-06-26,2026-06-26_0536_FGSRR,38.0,1.8,LFCL,LFCL,0,0,model
+2026-07-18,2026-07-18_0517_FGSRR,88.0,3.0,LFCL,LFGO,1,0,Vol vers Pont Sur Yonne
